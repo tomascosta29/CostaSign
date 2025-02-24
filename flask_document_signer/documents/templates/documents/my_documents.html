@@ -1,0 +1,76 @@
+<!-- flask_document_signer/documents/templates/documents/my_documents.html -->
+{% extends 'base.html' %}
+
+{% block title %}My Documents{% endblock %}
+
+{% block content %}
+    <h1>My Signed Documents</h1>
+
+    <div class="document-cards">
+        {% for doc in documents %}
+            <div class="document-card"
+                 data-id="{{ doc.id }}"
+                 data-filename="{{ doc.original_filename }}"
+                 data-uploaddate="{{ doc.upload_date }}"
+                 onclick="openModal(this)">  <!-- Added onclick -->
+                <div class="pdf-icon">PDF</div>
+                <div class="document-info">
+                    <span class="filename">{{ doc.original_filename }}</span>
+                    <span class="upload-date">{{ doc.upload_date }}</span>
+                </div>
+
+                <a href="{{ url_for('documents.download_document', document_id=doc.id) }}" class="button">Download</a>
+
+            </div>
+        {% endfor %}
+    </div>
+    <a href="{{ url_for('index') }}" class="button">Back to Main Page</a>
+    <!-- Modal -->
+    <div id="documentModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">×</span>
+            <h2>Document Details</h2>
+            <p><strong>Filename:</strong> <span id="modalFilename"></span></p>
+            <p><strong>Upload Date:</strong> <span id="modalUploadDate"></span></p>
+            <a id="modalDownloadLink" href="#" class="button">Download</a>
+            <!-- Add more details as needed -->
+        </div>
+    </div>
+
+    <script>
+        function openModal(card) {
+            const modal = document.getElementById('documentModal');
+            const modalFilename = document.getElementById('modalFilename');
+            const modalUploadDate = document.getElementById('modalUploadDate');
+            const modalDownloadLink = document.getElementById('modalDownloadLink');
+
+            // Get data from the card's data attributes
+            const filename = card.dataset.filename;
+            const uploadDate = card.dataset.uploaddate;
+            const documentId = card.dataset.id;
+
+
+            // Populate the modal content
+            modalFilename.textContent = filename;
+            modalUploadDate.textContent = uploadDate;
+            modalDownloadLink.href = "{{ url_for('documents.download_document', document_id=0) }}".replace('0', documentId);
+
+            // Show the modal
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('documentModal');
+            modal.style.display = "none";
+        }
+
+        // Close the modal if the user clicks outside the content area
+        window.onclick = function(event) {
+            const modal = document.getElementById('documentModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+    </script>
+{% endblock %}

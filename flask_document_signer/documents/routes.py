@@ -1,11 +1,28 @@
 # File: /home/fcosta/CostaSign/./flask_document_signer/documents/routes.py
-from flask import Blueprint, render_template, request, jsonify, current_app
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    flash,
+    jsonify,
+    current_app,
+    send_file,
+    abort,
+    redirect,
+    url_for,
+)
 import os
 import hashlib
-import sqlite3
+import uuid
 from .forms import UploadForm
 from flask_document_signer.auth.routes import token_required  # Correct import
 from flask_document_signer.models import get_db_connection
+from flask_document_signer.models import (
+    get_documents_for_user,
+    get_document_by_id,
+    insert_document,
+)
+from flask_document_signer.config import Config
 
 documents_bp = Blueprint(
     "documents", __name__, template_folder="templates", url_prefix="/documents"
@@ -26,29 +43,44 @@ def hash_file(filename):
 
 
 # --- Routes ---
-@documents_bp.route("/sign", methods=["POST"])
+@documents_bp.route("/sign", methods=["GET", "POST"])
 @token_required
 def sign_document(user_id):
-    form = UploadForm()
-    if form.validate_on_submit():
-        file = form.file.data
-        filename = os.path.join(current_app.config["UPLOAD_FOLDER"], file.filename)
-        file.save(filename)
-        file_hash = hash_file(filename)
+    if request.method == "POST":
+        if "file" not in request.files:
+            flash("No file part", "error")  # Use flash for messages
+            return redirect(request.url)
+        file = request.files["file"]
+        if file.filename == "":
+            flash("No selected file", "error")
+            return redirect(request.url)
+        if file:
+            # Generate a unique filename
+            unique_filename = str(uuid.uuid4())
+            file_name, file_extension = os.path.splitext(file.filename)
+            filename_on_disk = f"{unique_filename}{file_extension}"
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO signed_documents (user_id, filename, file_hash) VALUES (?, ?, ?)",
-            (user_id, file.filename, file_hash),
-        )
-        conn.commit()
-        conn.close()
+            original_filename = file.filename  # Store for display later
 
-        return jsonify({"message": "Document signed successfully"}), 200
-    return jsonify({"message": "Invalid file"}), 400
+            # Save the file
+            filepath = os.path.join(Config.DOCUMENT_STORAGE_PATH, filename_on_disk)
+            file.save(filepath)
+
+            # Calculate the hash of the file's content
+            with open(filepath, "rb") as f:
+                file_hash = hashlib.sha256(f.read()).hexdigest()
+
+            # Insert into the database using the function from models.py
+            document_id = insert_document(
+                user_id, filename_on_disk, original_filename
+            )  # Use the function
+            flash("File uploaded and signed successfully!", "success")
+            return redirect(url_for("documents.my_documents"))
+
+    return render_template("documents/sign.html")
 
 
+# ... (other imports and routes) ...
 @documents_bp.route("/verify", methods=["POST"])
 def verify_document():
     signed = None
@@ -60,6 +92,8 @@ def verify_document():
     form = UploadForm()  # Even for verification, use a form for consistency
     if form.validate_on_submit():
         file = form.file.data
+        # Create the UPLOAD_FOLDER if it doesn't exist
+        os.makedirs(current_app.config["UPLOAD_FOLDER"], exist_ok=True)
         filename_temp = os.path.join(
             current_app.config["UPLOAD_FOLDER"], "temp_verification"
         )
@@ -69,7 +103,7 @@ def verify_document():
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT user_id, filename, timestamp FROM signed_documents WHERE file_hash = ?",
+            "SELECT user_id, original_filename, upload_date FROM documents WHERE filename = ?",  # Corrected query
             (file_hash,),
         )
         result = cursor.fetchone()
@@ -80,8 +114,9 @@ def verify_document():
         if result:
             signed = True
             user_id = result["user_id"]
-            filename = result["filename"]
-            timestamp = result["timestamp"]
+            filename = result["original_filename"]  # Use original_filename
+            timestamp = result["upload_date"]  # Use upload_date
+            flash("Document is valid", "success")
             return render_template(
                 "documents/verify.html",
                 signed=signed,
@@ -93,11 +128,13 @@ def verify_document():
         else:
             signed = False
             message = "Document not found or has been altered."
+            flash(message, "error")  # flash message
             return render_template(
                 "documents/verify.html", signed=signed, message=message, form=form
             )
     else:
         message = form.errors or "An error occurred processing the file."
+        flash(message, "error")
         return render_template(
             "documents/verify.html", signed=signed, message=message, form=form
         )
@@ -114,3 +151,32 @@ def sign_page(user_id):
 def verify_page():
     form = UploadForm()  # Initialize the form even if it's a GET request
     return render_template("documents/verify.html", signed=None, form=form)
+
+
+@documents_bp.route("/my_documents")
+@token_required
+def my_documents(user_id):
+    documents = get_documents_for_user(user_id)
+    return render_template("documents/my_documents.html", documents=documents)
+
+
+@documents_bp.route("/download/<int:document_id>")
+@token_required
+def download_document(user_id, document_id):
+    document = get_document_by_id(document_id)
+
+    if not document:
+        abort(404, description="Document not found")  # 404 Not Found
+
+    # Authorization check: Make sure the document belongs to the logged-in user
+    if document["user_id"] != user_id:
+        abort(403, description="Unauthorized")  # 403 Forbidden
+
+    file_path = os.path.join(Config.DOCUMENT_STORAGE_PATH, document["filename"])
+
+    if not os.path.exists(file_path):
+        abort(404, description="File not found on server")
+
+    return send_file(
+        file_path, as_attachment=True, download_name=document["original_filename"]
+    )

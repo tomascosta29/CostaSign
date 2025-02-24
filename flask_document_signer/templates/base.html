@@ -1,3 +1,4 @@
+<!-- flask_document_signer/templates/base.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,6 +11,7 @@
             <li><a href="{{ url_for('index') }}">Home</a></li>
             {% if 'token' in session %}
                 <li><a href="{{ url_for('documents.sign_page') }}">Sign</a></li>
+                <li><a href="{{ url_for('documents.my_documents') }}">My Documents</a></li> <!-- Added link -->
                 <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
             {% else %}
                 <li><a href="{{ url_for('auth.login') }}">Login</a></li>
@@ -19,6 +21,15 @@
         </ul>
     </nav>
     <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="flashes">
+              {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
     </main>
 </body>

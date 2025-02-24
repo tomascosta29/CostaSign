@@ -14,6 +14,11 @@ class Config:
         False  # Good practice to disable this if not needed
     )
 
+    DATABASE_URI = "document_signing.db"  # Relative path to the db
+    DOCUMENT_STORAGE_PATH = os.path.join(
+        os.getcwd(), "document_storage"
+    )  # Absolute Path to storage
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
