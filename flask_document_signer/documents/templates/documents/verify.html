@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Verify Document</h1>
+    <form method="POST" action="{{ url_for('documents.verify_document') }}" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="drop-zone">
+            <span class="drop-zone__prompt">Drop file here or click to upload</span>
+           {{ form.file(class="drop-zone__input") }}
+        </div>
+        {% for error in form.file.errors %}
+            <span class="error">{{ error }}</span>
+        {% endfor %}
+        <button type="submit">Verify Document</button>
+    </form>
+
+    {% if signed is not none %}
+        {% if signed %}
+            <p>Document is valid.</p>
+            <p>Signed by user ID: {{ user_id }}</p>
+            <p>Original filename: {{ filename }}</p>
+            <p>Timestamp: {{ timestamp }}</p>
+        {% else %}
+            <p style="color: red;">{{ message }}</p>
+        {% endif %}
+    {% endif %}
+{% endblock %}

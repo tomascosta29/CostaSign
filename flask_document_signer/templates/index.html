@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome - Document Signer{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1>Secure and Easy Document Signing</h1>
+        <p>
+            Welcome to our digital document signing platform! Sign, verify,
+            and manage your documents with confidence and ease.
+        </p>
+        {% if 'token' in session %}
+            <a href="{{ url_for('documents.sign_page') }}" class="button">Get Started</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}" class="button">Login</a>
+            <a href="{{ url_for('auth.register') }}" class="button secondary-button">Register</a>
+        {% endif %}
+
+    </section>
+
+    <section class="features">
+        <h2>Key Features</h2>
+        <div class="feature-grid">
+            <div class="feature">
+                <h3>Secure Signing</h3>
+                <p>
+                    Our platform uses industry-standard encryption to ensure the
+                    integrity and confidentiality of your documents.
+                </p>
+            </div>
+            <div class="feature">
+                <h3>Easy Verification</h3>
+                <p>
+                    Verify the authenticity of signed documents with our
+                    simple and reliable verification tool.
+                </p>
+            </div>
+            <div class="feature">
+                <h3>User-Friendly Interface</h3>
+                <p>
+                   Enjoy a smooth and intuitive user experience, designed to be
+                    accessible to everyone.
+                </p>
+            </div>
+            <div class="feature">
+                <h3>Microservice Architecture</h3>
+                <p>
+                    Built on a robust microservice architecture for scalability
+                    and reliability.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="about">
+        <h2>About Us</h2>
+        <p>
+            We are dedicated to providing a secure, reliable, and easy-to-use
+            document signing solution.  Our platform is built with the latest
+            technologies to ensure the highest level of security and performance.
+        </p>
+    </section>
+{% endblock %}

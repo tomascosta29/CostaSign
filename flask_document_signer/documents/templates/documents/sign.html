@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Sign Document</h1>
+    <form method="POST" action="{{ url_for('documents.sign_document') }}" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="drop-zone">
+            <span class="drop-zone__prompt">Drop file here or click to upload</span>
+            {{ form.file(class="drop-zone__input") }} {# Keep the original input, but style it #}
+        </div>
+        {% for error in form.file.errors %}
+            <span class="error">{{ error }}</span>
+        {% endfor %}
+        <button type="submit">Sign Document</button>
+    </form>
+{% endblock %}

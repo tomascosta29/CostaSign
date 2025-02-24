@@ -1,0 +1,245 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f7f9fc; /* Lighter gray background */
+    color: #333;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+nav {
+    background-color: #2c3e50; /* Darker, more modern navbar color */
+    color: #fff;
+    padding: 1rem 2rem; /* Add horizontal padding */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    margin-bottom: 2rem; /* Add some space between nav and content */
+
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center; /* Center the navigation items */
+    align-items: center;
+    padding: 0;
+}
+
+nav ul li {
+    margin: 0 1.5rem; /* More horizontal spacing */
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    font-size: 1.1rem; /* Slightly larger font size */
+}
+
+nav a:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle hover effect */
+}
+
+main {
+    max-width: 960px; /* Wider content area */
+    margin: auto;
+    padding: 2rem;  /* More padding */
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    flex-grow: 1; /* Allow main to occupy all available space */
+}
+
+h1 {
+    font-size: 3.5rem;  /* Even larger heading */
+    margin-bottom: 1rem;
+    color: #2c3e50;  /* Use the navbar color for headings */
+}
+
+form div {
+    margin-bottom: 1.5rem; /* More spacing around form elements */
+}
+
+form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+form input[type="text"],
+form input[type="password"],
+form input[type="email"],
+form input[type="file"] {
+    width: 100%;
+    padding: 1rem;    /* More padding */
+    border: 1px solid #ced4da; /* Lighter border color */
+    border-radius: 4px;
+    font-size: 1.1rem; /* Larger font size */
+    box-sizing: border-box;
+    transition: border-color 0.3s ease; /* Smooth border transition */
+}
+
+form input[type="text"]:focus,
+form input[type="password"]:focus,
+form input[type="email"]:focus,
+form input[type="file"]:focus {
+    border-color: #80bdff; /* Highlight border on focus */
+    outline: 0;           /* Remove default outline */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Add a subtle glow */
+}
+
+
+form input[type="submit"],
+button {
+    background-color: #3498db; /* Brighter blue */
+    color: #fff;
+    padding: 1rem 2rem;     /* More padding */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.1rem;     /* Larger font size */
+    transition: background-color 0.3s ease;
+}
+
+form input[type="submit"]:hover,
+button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+.error {
+    color: #e74c3c; /* Brighter red for errors */
+    margin-top: 0.25rem;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 4rem 0;       /* More padding */
+    margin-bottom: 3rem;   /* More margin */
+}
+
+.hero p {
+    font-size: 1.3rem;      /* Larger font size */
+    margin-bottom: 2.5rem;  /* More margin */
+    color: #555;
+}
+
+.button {
+    display: inline-block;
+    background-color: #3498db; /* Consistent button style */
+    color: #fff;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    margin: 0 0.5rem; /* Horizontal spacing between buttons */
+}
+
+.button:hover {
+    background-color: #2980b9;
+}
+
+.secondary-button {
+    background-color: #95a5a6; /* Muted gray */
+}
+
+.secondary-button:hover {
+    background-color: #7f8c8d; /* Darker gray on hover */
+}
+
+/* Features Section */
+.features {
+    margin-bottom: 3rem;
+}
+
+.features h2 {
+    text-align: center;
+    margin-bottom: 2rem;      /* More space below heading */
+    font-size: 2rem;        /* Larger font size*/
+    color: #2c3e50;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Wider min width */
+    gap: 2rem;  /* More gap */
+}
+
+.feature {
+    padding: 2rem;        /* More padding */
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Use box-shadow instead of border */
+    background-color: #fff; /* Explicit white background */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Add hover effect */
+}
+.feature:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+
+}
+
+.feature h3 {
+    margin-bottom: 1rem;
+    color: #3498db; /* Consistent color with buttons */
+    font-size: 1.5rem;
+}
+
+.feature p{
+    font-size: 1.1rem;
+}
+
+/* About Section */
+.about {
+    text-align: center;
+    padding: 3rem 0;
+    border-top: 1px solid #ecf0f1; /* Lighter separator */
+}
+
+.about h2{
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+.about p {
+    max-width: 700px;   /* Slightly narrower */
+    margin: 0 auto;
+    font-size: 1.1rem;
+
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        align-items: center; /* Center items when stacked */
+    }
+    nav ul li {
+        margin: 0.5rem 0;
+    }
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    .hero p {
+        font-size: 1rem;
+    }
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+     form input[type="text"],
+    form input[type="password"],
+    form input[type="email"]{
+        width: 100%;
+    }
+}
